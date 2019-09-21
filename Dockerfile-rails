@@ -1,0 +1,23 @@
+FROM ruby:2.6
+ENV LANG C.UTF-8
+RUN apt-get update -qq && apt-get install -y nodejs mariadb-client
+RUN mkdir /myapp
+WORKDIR /myapp
+COPY rails_app/Gemfile /myapp/Gemfile
+COPY rails_app/Gemfile.lock /myapp/Gemfile.lock
+RUN bundle install
+COPY rails_app /myapp
+
+# Usability up
+RUN echo "alias ll='ls -la'" >> ~/.bashrc
+RUN echo export "PS1='\[\e[1;32m\][\u@\h:\w]\$\[\e[00m\]'" >> ~/.bashrc
+
+# Add a script to be executed every time the container starts.
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
+EXPOSE 3000
+
+# Start the main process.
+
+CMD ["rails", "server", "-b", "0.0.0.0"]

@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  web:
+    image: local/rails
+    restart: always
+    container_name: rails
+    tty: true
+    build: 
+      context: .
+      dockerfile: Dockerfile-rails
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    environment:
+      MYAPP_DATABASE_HOST: db
+      MYAPP_DATABASE_NAME: myapp_production # rails指定するproduct用
+      MYAPP_DATABASE_USERNAME: myapp  # rails指定するproduct用
+      MYAPP_DATABASE_PASSWORD: myappPass  # rails指定するproduct用
+      MYAPP_DATABASE_ROOT_PASS: root_pass
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./rails_app:/myapp"
+
+  db:
+    image: mariadb:10
+    restart: always
+    container_name: rails_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass # mandatory
+      MYSQL_DATABASE: myapp_production
+      MYSQL_USER: myapp #optionl
+      MYSQL_PASSWORD: myappPass #optionl
+    volumes:
+      - "db_data:/var/lib/mysql"
+
+volumes:
+  db_data:
