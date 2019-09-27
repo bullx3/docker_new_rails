@@ -1,6 +1,6 @@
-#create new rails from docker
+# create new rails from docker
 
-##Description
+## Description
 
 docker-composeを使ってrails + mariadb(mysql)環境を新規に作る為のスクリプト  
 railsのアプリ名は"myapp"で固定化される  
